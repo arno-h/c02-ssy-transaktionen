@@ -10,6 +10,11 @@ router.patch('/:carNr/renter', updateRenter);
 router.get('/:carNr/lock', getLockStatus);
 router.put('/:carNr/lock', changeLock);
 
+router.post('/prepare', prepare);
+router.post('/commit', commit);
+
+
+
 let carCollection = db.getCollection('cars');
 let lockStatus = {};
 
@@ -56,6 +61,31 @@ function updateRenter(request, response) {
     carCollection.update(car);
 
     response.json(car);
+}
+
+let in_transaction = false;
+let transaction_carNr = 0;
+let transaction_renter = "";
+
+function prepare(req, resp) {
+    // { carNr: 2, renter: "Frida Flink" }
+
+    if (in_transaction) {
+        resp.status(409).end();
+        return;
+    }
+    in_transaction = true;
+    transaction_carNr = req.body.carNr;
+    transaction_renter = req.body.renter;
+    resp.status(200).end();
+}
+
+function commit(req, resp) {
+    let car = carCollection.get(transaction_carNr);
+    car.setRenter(transaction_renter);
+    carCollection.update(car);
+    in_transaction = false;
+    resp.status(200).end();
 }
 
 module.exports = router;
