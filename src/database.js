@@ -19,7 +19,7 @@ cars.insert(new Car("Citroen", "C3", "silber", "Susi Zitrone"));
 cars.insert(new Car("Honda", "Jazz", "orange", "Lily Strupp"));
 cars.insert(new Car("Fiat", "500x", "grün", "Josi Flimmer"));
 
-/* Der Einfachheit halber nehmen wir an, dass die "Forein-Key"-Beziehung
+/* Der Einfachheit halber nehmen wir an, dass die "Foreign-Key"-Beziehung
    so aussieht, dass die beiden Primärschlüssel gleich sind, d.h.
    Auto 1 <-> Rechnung 1, Auto 2 <-> Rechnung 2, etc.
  */
