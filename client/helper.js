@@ -1,4 +1,6 @@
-const Request = require('request');
+const Axios = require('axios');
+const axios = Axios.create({validateStatus: null});
+
 
 class Helper {
     constructor(label) {
@@ -10,17 +12,17 @@ class Helper {
     }
 
     updateRenter(carNr, renter, message) {
-        Request.patch({
-            url: 'http://127.0.0.1:3000/cars/' + carNr + '/renter',
-            json: { renter: renter }
-        }, this.showResponse(message));
+        axios.patch(
+            'http://127.0.0.1:3000/cars/' + carNr + '/renter',
+            { renter: renter }
+        ).then(this.showResponse(message));
     }
 
     updateInvoice(invoiceNr, invoice, message) {
-        Request.put({
-            url: 'http://127.0.0.1:3000/invoices/' + invoiceNr,
-            json: invoice
-        }, this.showResponse(message));
+        axios.put(
+            'http://127.0.0.1:3000/invoices/' + invoiceNr,
+            invoice
+        ).then(this.showResponse(message));
     }
 
     showCarAndInvoice(carNr, invoiceNr, message) {
@@ -29,25 +31,21 @@ class Helper {
     }
 
     showCar(carNr, message) {
-        Request.get({
-            url: 'http://127.0.0.1:3000/cars/' + carNr,
-            json: true
-        }, this.showResponse(message));
+        axios.get('http://127.0.0.1:3000/cars/' + carNr)
+            .then(this.showResponse(message));
     }
 
     showInvoice(invoiceNr, message) {
-        Request.get({
-            url: 'http://127.0.0.1:3000/invoices/' + invoiceNr,
-            json: true
-        }, this.showResponse(message));
+        axios.get('http://127.0.0.1:3000/invoices/' + invoiceNr)
+            .then(this.showResponse(message));
     }
 
     showResponse(message="") {
         let heading = this.label + ': ' + message;
 
-        return function (error, response, body) {
+        return function (response) {
             console.log(heading);
-            console.log(body);
+            console.log(response.data);
         };
     }
 }
