@@ -39,14 +39,14 @@ async function startTransaction(req, resp) {
 
     if (invoice_prepare.status !== 200) {
         // Prepare abbrechen
-        await axios.post('http://127.0.0.1:3000/cars/cancel');
+        await axios.post('http://127.0.0.1:3000/cars/cancel/' + req.body.carNr);
         resp.status(409).json('/invoices nicht bereit für prepare');
         return;
     }
 
     // commit
-    await axios.post('http://127.0.0.1:3000/cars/commit');
-    await axios.post('http://127.0.0.1:3000/invoices/commit');
+    await axios.post('http://127.0.0.1:3000/cars/commit/' + req.body.carNr);
+    await axios.post('http://127.0.0.1:3000/invoices/commit/' + req.body.carNr);
 
     resp.json("Transaktion erfolgreich beendet");
 }

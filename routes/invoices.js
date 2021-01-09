@@ -11,8 +11,8 @@ router.get('/:invoiceNr/lock', getLockStatus);
 router.put('/:invoiceNr/lock', changeLock);
 
 router.post('/prepare', prepare);
-router.post('/commit', commit);
-router.post('/cancel', cancel);
+router.post('/commit/:invoiceNr', commit);
+router.post('/cancel/:invoiceNr', cancel);
 
 
 let invoiceCollection = db.getCollection('invoices');
@@ -62,41 +62,40 @@ function updateInvoice(request, response) {
 }
 
 
-let in_transaction = false;
-let transaction_invoiceNr = 0;
-let transaction_person = "";
-let transaction_amount = 0;
+let in_transaction = {};
+let transaction_person = {};    // wäre auch möglich person+amount in einer Variable zu speichern
+let transaction_amount = {};
 
 function prepare(req, resp) {
     // { invoiceNr: 2, person: "Frida Flink", amount: 190 }
+    const invoiceNr = req.body.invoiceNr;
 
-    if (in_transaction) {
+    if (in_transaction[invoiceNr] === true) {
         resp.status(409).end();
         return;
     }
-    in_transaction = true;
-    transaction_invoiceNr = req.body.invoiceNr;
-    transaction_person = req.body.person;
-    transaction_amount = req.body.amount;
+    in_transaction[invoiceNr] = true;
+    transaction_person[invoiceNr] = req.body.person;
+    transaction_amount[invoiceNr] = req.body.amount;
     resp.status(200).end();
 }
 
 function commit(req, resp) {
-    let invoice = invoiceCollection.get(transaction_invoiceNr);
+    let invoiceNr = parseInt(req.params.invoiceNr);
+    let invoice = invoiceCollection.get(invoiceNr);
     invoice.update({
-        person: transaction_person,
-        amount: transaction_amount
+        person: transaction_person[invoiceNr],
+        amount: transaction_amount[invoiceNr]
     });
-
     invoiceCollection.update(invoice);
-    in_transaction = false;
+    in_transaction[invoiceNr] = false;
     resp.status(200).end();
 }
 
 function cancel(req, resp) {
-    in_transaction = false;
+    let invoiceNr = parseInt(req.params.invoiceNr);
+    in_transaction[invoiceNr] = false;
     resp.status(200).end();
 }
-
 
 module.exports = router;
