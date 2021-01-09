@@ -22,6 +22,11 @@ async function startTransaction(req, resp) {
         }
     );
 
+    if (car_prepare.status !== 200) {
+        resp.status(409).json('/cars nicht bereit für prepare');
+        return;
+    }
+
     // prepare Invoice
     let invoice_prepare = await axios.post(
         'http://127.0.0.1:3000/invoices/prepare',
@@ -32,11 +37,18 @@ async function startTransaction(req, resp) {
         }
     );
 
+    if (invoice_prepare.status !== 200) {
+        // Prepare abbrechen
+        await axios.post('http://127.0.0.1:3000/cars/cancel');
+        resp.status(409).json('/invoices nicht bereit für prepare');
+        return;
+    }
+
     // commit
     await axios.post('http://127.0.0.1:3000/cars/commit');
     await axios.post('http://127.0.0.1:3000/invoices/commit');
 
-    resp.json(true);
+    resp.json("Transaktion erfolgreich beendet");
 }
 
 module.exports = router;

@@ -12,6 +12,7 @@ router.put('/:carNr/lock', changeLock);
 
 router.post('/prepare', prepare);
 router.post('/commit', commit);
+router.post('/cancel', cancel);
 
 
 
@@ -84,6 +85,11 @@ function commit(req, resp) {
     let car = carCollection.get(transaction_carNr);
     car.setRenter(transaction_renter);
     carCollection.update(car);
+    in_transaction = false;
+    resp.status(200).end();
+}
+
+function cancel(req, resp) {
     in_transaction = false;
     resp.status(200).end();
 }

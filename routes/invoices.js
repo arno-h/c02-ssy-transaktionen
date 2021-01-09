@@ -12,6 +12,7 @@ router.put('/:invoiceNr/lock', changeLock);
 
 router.post('/prepare', prepare);
 router.post('/commit', commit);
+router.post('/cancel', cancel);
 
 
 let invoiceCollection = db.getCollection('invoices');
@@ -88,6 +89,11 @@ function commit(req, resp) {
     });
 
     invoiceCollection.update(invoice);
+    in_transaction = false;
+    resp.status(200).end();
+}
+
+function cancel(req, resp) {
     in_transaction = false;
     resp.status(200).end();
 }
