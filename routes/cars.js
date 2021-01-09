@@ -7,8 +7,28 @@ router.post('/', newCar);
 router.get('/', listAllCars);
 router.get('/:carNr', getCar);
 router.patch('/:carNr/renter', updateRenter);
+router.get('/:carNr/lock', getLockStatus);
+router.put('/:carNr/lock', changeLock);
 
 let carCollection = db.getCollection('cars');
+let lockStatus = {};
+
+function getLockStatus(req, res) {
+    let nr = req.params.invoiceNr;
+    res.json(lockStatus[nr]);
+}
+
+function changeLock(req, res) {
+    /* Body: { "action": ... } */  // "lock", "unlock"
+    let nr = req.params.carNr;
+    let action = req.body.action;
+    if (lockStatus[nr] !== action) {
+        lockStatus[nr] = action;
+        res.json(true);
+    } else {
+        res.json(false);
+    }
+}
 
 function newCar(request, response) {
     let car = new Car(
