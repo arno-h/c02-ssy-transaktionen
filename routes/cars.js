@@ -8,6 +8,34 @@ router.get('/', listAllCars);
 router.get('/:carNr', getCar);
 router.patch('/:carNr/renter', updateRenter);
 
+
+router.put('/:carNr/lock', changeLock);
+
+let lockStatus = {};
+
+function changeLock(req, res) {
+    /* Body: { "action": ... } */  // "lock", "unlock"
+    let nr = req.params.carNr;
+    let action = req.body.action;
+    if (lockStatus[nr] === "lock") { // derzeit besetzt/gelockt
+        if (action === "unlock") {
+            lockStatus[nr] = "unlock";
+            res.json(true);
+        } else {                    // lock eines bereits gelockten Eintrags
+            res.json(false);
+        }
+    } else { // derzeit frei/unlocked
+        if (action === "lock") {
+            lockStatus[nr] = "lock";
+            res.json(true);
+        } else {
+            res.json(false);        // unlock eines bereits freien Eintrags
+        }
+    }
+}
+
+
+
 let carCollection = db.getCollection('cars');
 
 function newCar(request, response) {
