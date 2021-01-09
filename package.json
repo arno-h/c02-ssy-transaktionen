@@ -1,18 +1,10 @@
 {
   "name": "transactions",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "monitor": "nodemon ./bin/www",
-    "debug": "node %NODE_DEBUG_OPTION% ./bin/www",
-    "debuglinux": "node $NODE_DEBUG_OPTION ./bin/www",
-    "simpleSale": "node ./client/simpleSale.js",
-    "dirtyRead": "node ./client/dirtyRead.js",
-    "dirtyWrite": "node ./client/dirtyWrite.js",
-    "transaction": "node ./client/transaction.js",
-    "concurrentTransaction": "node ./client/concurrentTransaction.js",
-    "retryConcurrentTransaction": "node ./client/retryConcurrentTransaction.js"
+    "monitor": "nodemon ./bin/www"
   },
   "dependencies": {
     "axios": "^0.21.0",

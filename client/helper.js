@@ -7,46 +7,51 @@ class Helper {
         this.label = label;
     }
 
-    delay(timeout, func, ...args) {
-        setTimeout(() => func.apply(this, args), timeout);
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    updateRenter(carNr, renter, message) {
-        axios.patch(
+    async updateRenter(carNr, renter, message) {
+        const response = await axios.patch(
             'http://127.0.0.1:3000/cars/' + carNr + '/renter',
             { renter: renter }
-        ).then(this.showResponse(message));
+        );
+        this.showResponse(response, message);
+        return response;
     }
 
-    updateInvoice(invoiceNr, invoice, message) {
-        axios.put(
+    async updateInvoice(invoiceNr, invoice, message) {
+        const response = await axios.put(
             'http://127.0.0.1:3000/invoices/' + invoiceNr,
             invoice
-        ).then(this.showResponse(message));
+        );
+        this.showResponse(response, message);
+        return response;
     }
 
-    showCarAndInvoice(carNr, invoiceNr, message) {
-        this.showCar(carNr, message);
-        this.showInvoice(invoiceNr, message);
+    async showCarAndInvoice(carNr, invoiceNr, message) {
+        this.showCar(carNr, message + " (car)");
+        this.showInvoice(invoiceNr, message + " (invoice)");
     }
 
-    showCar(carNr, message) {
-        axios.get('http://127.0.0.1:3000/cars/' + carNr)
-            .then(this.showResponse(message));
+    async showCar(carNr, message) {
+        const response = await axios.get('http://127.0.0.1:3000/cars/' + carNr)
+        this.showResponse(response, message);
+        return response;
     }
 
-    showInvoice(invoiceNr, message) {
-        axios.get('http://127.0.0.1:3000/invoices/' + invoiceNr)
-            .then(this.showResponse(message));
+    async showInvoice(invoiceNr, message) {
+        const response = await axios.get('http://127.0.0.1:3000/invoices/' + invoiceNr)
+        this.showResponse(response, message);
+        return response;
     }
 
-    showResponse(message="") {
+    showResponse(response, message="") {
         let heading = this.label + ': ' + message;
-
-        return function (response) {
-            console.log(heading);
-            console.log(response.data);
-        };
+        console.log(heading);
+        delete response.data.meta;
+        delete response.data.$loki;
+        console.log(response.data);
     }
 }
 
