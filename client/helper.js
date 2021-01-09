@@ -69,6 +69,22 @@ class Helper {
         );
         return lock_response.data;
     }
+
+    async lockCarAndInvoice(nr) {
+        let success = await this.carLock(nr, "lock");
+        if (!success) {
+            console.log(this.label + ": Car already locked.");
+            return false;
+        }
+
+        success = await this.invoiceLock(nr, "lock");
+        if (!success) {
+            console.log(this.label + ": Invoice already locked.");
+            await this.carLock(nr, "unlock");
+            return false;
+        }
+        return true;
+    }
 }
 
 module.exports = Helper;

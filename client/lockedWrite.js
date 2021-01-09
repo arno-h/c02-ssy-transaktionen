@@ -5,16 +5,8 @@ const Invoice = require('../src/Invoice');
 async function client1() {
     const client1 = new Helper("Client 1");
 
-    let success = await client1.carLock(2, "lock");
+    let success = await client1.lockCarAndInvoice(2);
     if (!success) {
-        console.log("Client 1: Car already locked.")
-        return;
-    }
-
-    success = await client1.invoiceLock(2, "lock");
-    if (!success) {
-        console.log("Client 1: Invoice already locked.")
-        await client1.carLock(2, "unlock");
         return;
     }
 
@@ -34,16 +26,8 @@ async function client2() {
 
     await client2.sleep(3);
 
-    let success = await client2.carLock(2, "lock");
+    let success = await client2.lockCarAndInvoice(2);
     if (!success) {
-        console.log("Client 2: Car already locked.")
-        return;
-    }
-
-    success = await client2.invoiceLock(2, "lock");
-    if (!success) {
-        console.log("Client 2: Invoice already locked.")
-        await client2.carLock(2, "unlock");
         return;
     }
 
