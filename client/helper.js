@@ -14,7 +14,7 @@ class Helper {
     async updateRenter(carNr, renter, message) {
         const response = await axios.patch(
             'http://127.0.0.1:3000/cars/' + carNr + '/renter',
-            { renter: renter }
+            {renter: renter}
         );
         this.showResponse(response, message);
         return response;
@@ -46,12 +46,28 @@ class Helper {
         return response;
     }
 
-    showResponse(response, message="") {
+    showResponse(response, message = "") {
         let heading = this.label + ': ' + message;
         console.log(heading);
         delete response.data.meta;
         delete response.data.$loki;
         console.log(response.data);
+    }
+
+    async carLock(carNr, action) {
+        const lock_response = await axios.put(
+            'http://127.0.0.1:3000/cars/' + carNr + '/lock',
+            {action: action}
+        );
+        return lock_response.data;
+    }
+
+    async invoiceLock(invoiceNr, action) {
+        const lock_response = await axios.put(
+            'http://127.0.0.1:3000/invoices/' + invoiceNr + '/lock',
+            {action: action}
+        );
+        return lock_response.data;
     }
 }
 
