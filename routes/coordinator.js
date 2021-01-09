@@ -1,47 +1,42 @@
+const Axios = require('axios');
+const axios = Axios.create({validateStatus: null});
 const express = require('express');
 const router = express.Router();
-const Request = require('request');
+
 
 router.post('/start_transaction', startTransaction);
 
-function startTransaction(req, resp) {
+async function startTransaction(req, resp) {
     /* { carNr: 7,
          renter: "Frida Flink",
          amount: 190
        }
      */
-    Request.post({
-        url: 'http://127.0.0.1:3000/cars/prepare',
-        json: {
+
+    // prepare Car
+    let car_prepare = await axios.post(
+        'http://127.0.0.1:3000/cars/prepare',
+        {
             carNr: req.body.carNr,
             renter: req.body.renter
         }
-    }, carResponse);
+    );
 
-    function carResponse(err, resp, body) {
-        Request.post({
-            url: 'http://127.0.0.1:3000/invoices/prepare',
-            json: {
-                invoiceNr: req.body.carNr,
-                person: req.body.renter,
-                amount: req.body.amount
-            }
-        }, invoiceResponse);
-    }
+    // prepare Invoice
+    let invoice_prepare = await axios.post(
+        'http://127.0.0.1:3000/invoices/prepare',
+        {
+            invoiceNr: req.body.carNr,
+            person: req.body.renter,
+            amount: req.body.amount
+        }
+    );
 
-    function invoiceResponse(err, resp, body) {
-        Request.post({
-            url: 'http://127.0.0.1:3000/cars/commit',
-            json: true
-        });
-        Request.post({
-            url: 'http://127.0.0.1:3000/invoices/commit',
-            json: true
-        });
-    }
+    // commit
+    await axios.post('http://127.0.0.1:3000/cars/commit');
+    await axios.post('http://127.0.0.1:3000/invoices/commit');
 
+    resp.json(true);
 }
-
-
 
 module.exports = router;
