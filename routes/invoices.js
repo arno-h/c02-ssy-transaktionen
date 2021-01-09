@@ -63,8 +63,7 @@ function updateInvoice(request, response) {
 
 
 let in_transaction = {};
-let transaction_person = {};    // wäre auch möglich person+amount in einer Variable zu speichern
-let transaction_amount = {};
+let transaction_data = {};    // person+amount in einer Variable
 
 function prepare(req, resp) {
     // { invoiceNr: 2, person: "Frida Flink", amount: 190 }
@@ -75,8 +74,7 @@ function prepare(req, resp) {
         return;
     }
     in_transaction[invoiceNr] = true;
-    transaction_person[invoiceNr] = req.body.person;
-    transaction_amount[invoiceNr] = req.body.amount;
+    transaction_data[invoiceNr] = req.body;
     resp.status(200).end();
 }
 
@@ -84,17 +82,19 @@ function commit(req, resp) {
     let invoiceNr = parseInt(req.params.invoiceNr);
     let invoice = invoiceCollection.get(invoiceNr);
     invoice.update({
-        person: transaction_person[invoiceNr],
-        amount: transaction_amount[invoiceNr]
+        person: transaction_data[invoiceNr].person,
+        amount: transaction_data[invoiceNr].amount
     });
     invoiceCollection.update(invoice);
     in_transaction[invoiceNr] = false;
+    delete transaction_data[invoiceNr];     // Aufräumen (Daten werden nicht mehr benötigt)
     resp.status(200).end();
 }
 
 function cancel(req, resp) {
     let invoiceNr = parseInt(req.params.invoiceNr);
     in_transaction[invoiceNr] = false;
+    delete transaction_data[invoiceNr];     // Aufräumen (Daten werden nicht mehr benötigt)
     resp.status(200).end();
 }
 
